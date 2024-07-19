@@ -1,5 +1,6 @@
 from flask import Flask
 from extensions import db
+from model import Student
 
 app = Flask(__name__)
 db.init_app(app)
