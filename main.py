@@ -1,19 +1,21 @@
 import os
 from flask import Flask, request, jsonify
-from extensions import db
+from extensions import db, migrate
 from model import Student
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 
 db.init_app(app)
+migrate.init_app(app, db)
 
 @app.route('/register', methods=['POST'])
 def register():
   data = request.get_json()
-  existing_student = Student.query.filter_by(email=data['email']).first()
+  existing_student_mail = Student.query.filter_by(email=data['email'].lower()).first()
+  existing_student_name = Student.query.filter_by(name=data['name'].lower()).first()
 
-  if existing_student:
+  if existing_student_mail or existing_student_name:
     return jsonify({'error': 'This account is already existing'}), 400
   
   # checking empty values
@@ -21,7 +23,7 @@ def register():
     if value == '':
       return jsonify({'error': f'{key} is empty'}), 400
     
-  student = Student(name=data['name'].lower(), mail=data['mail'].lower(), cohort=data['cohort'].lower(), program=data['program'].lower(), status=data['status'].lower())
+  student = Student(name=data['name'].lower(), email=data['email'].lower(), cohort=data['cohort'].lower(), program=data['program'].lower())
   db.session.add(student)
   db.session.commit()
   return jsonify({'message': 'Student is already created'}), 201
