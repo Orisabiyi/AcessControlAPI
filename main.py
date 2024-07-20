@@ -4,7 +4,7 @@ from extensions import db
 from model import Student
 
 app = Flask(__name__)
-app.config['DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 
 db.init_app(app)
 
@@ -24,7 +24,7 @@ def register():
   student = Student(name=data['name'], mail=data['mail'], cohort=data['cohort'], program=data['program'], status=data['status'])
   db.session.add(student)
   db.session.commit()
-  return jsonify({'message': 'Student is already created'})
+  return jsonify({'message': 'Student is already created'}), 201
 
 @app.route('/checkin', methods=['POST'])
 def checkin():
