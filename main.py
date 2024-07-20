@@ -21,7 +21,7 @@ def register():
     if value == '':
       return jsonify({'error': f'{key} is empty'}), 400
     
-  student = Student(name=data['name'], mail=data['mail'], cohort=data['cohort'], program=data['program'], status=data['status'])
+  student = Student(name=data['name'].lower(), mail=data['mail'].lower(), cohort=data['cohort'].lower(), program=data['program'].lower(), status=data['status'].lower())
   db.session.add(student)
   db.session.commit()
   return jsonify({'message': 'Student is already created'}), 201
