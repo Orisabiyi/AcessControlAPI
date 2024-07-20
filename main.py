@@ -9,6 +9,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 db.init_app(app)
 migrate.init_app(app, db)
 
+ERR = 400
+SUCCESS = 201
+
 @app.route('/register', methods=['POST'])
 def register():
   data = request.get_json()
@@ -16,17 +19,17 @@ def register():
   existing_student_name = Student.query.filter_by(name=data['name'].lower()).first()
 
   if existing_student_mail or existing_student_name:
-    return jsonify({'error': 'This account is already existing'}), 400
+    return jsonify({'error': 'This account is already existing'}), ERR
   
   # checking empty values
   for key, value in data.items():
     if value == '':
-      return jsonify({'error': f'{key} is empty'}), 400
+      return jsonify({'error': f'{key} is empty'}), ERR
     
   student = Student(name=data['name'].lower(), email=data['email'].lower(), cohort=data['cohort'].lower(), program=data['program'].lower())
   db.session.add(student)
   db.session.commit()
-  return jsonify({'message': 'Student is already created'}), 201
+  return jsonify({'message': 'Student is already created'}), SUCCESS
 
 @app.route('/checkin', methods=['POST'])
 def checkin():
